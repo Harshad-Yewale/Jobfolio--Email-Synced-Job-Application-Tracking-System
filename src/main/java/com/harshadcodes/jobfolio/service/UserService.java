@@ -4,6 +4,8 @@ import com.harshadcodes.jobfolio.dto.request.LoginRequest;
 import com.harshadcodes.jobfolio.dto.request.RegisterRequest;
 import com.harshadcodes.jobfolio.dto.response.AuthResponse;
 import com.harshadcodes.jobfolio.entity.User;
+import com.harshadcodes.jobfolio.exception.EmailAlreadyExistsException;
+import com.harshadcodes.jobfolio.exception.InvalidCredentialsException;
 import com.harshadcodes.jobfolio.repository.UserRepository;
 import com.harshadcodes.jobfolio.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +25,7 @@ public class UserService {
 
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already registered");
+            throw new EmailAlreadyExistsException("Email already registered");
         }
 
         User user = new User();
@@ -43,7 +45,7 @@ public class UserService {
         );
 
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("Invalid email or password"));
+                .orElseThrow(() -> new InvalidCredentialsException("Invalid email or password"));
 
         String token = jwtUtil.generateToken(user.getEmail());
         return new AuthResponse(token, user.getFullName(), user.getEmail());
