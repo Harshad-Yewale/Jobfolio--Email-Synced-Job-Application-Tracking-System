@@ -1,33 +1,17 @@
-HELP.md
-target/
-.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+# Java / Spring Boot
+backend/target/
+backend/.idea/
+backend/*.iml
 
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
+# Python
+jobsearch-service/venv/
+jobsearch-service/__pycache__/
+jobsearch-service/*.pyc
 
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
+# React 
+frontend/node_modules/
+frontend/dist/
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
-
-### VS Code ###
-.vscode/
+# General
+.env
+.DS_Store
