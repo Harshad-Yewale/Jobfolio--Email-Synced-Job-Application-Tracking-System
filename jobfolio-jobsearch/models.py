@@ -7,6 +7,7 @@ class JobSearchRequest(BaseModel):
     location: Optional[str] = "India"
     results_wanted: Optional[int] = 15
     site_names: Optional[List[str]] = ["indeed", "linkedin"]
+    hours_old: int | None = 168 
 
 
 class JobResult(BaseModel):

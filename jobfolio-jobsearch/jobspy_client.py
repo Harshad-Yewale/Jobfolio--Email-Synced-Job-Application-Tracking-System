@@ -8,6 +8,7 @@ def search_jobs(request: JobSearchRequest):
         search_term=request.search_term,
         location=request.location,
         results_wanted=request.results_wanted,
+        hours_old=request.hours_old,
     )
 
     results = []
