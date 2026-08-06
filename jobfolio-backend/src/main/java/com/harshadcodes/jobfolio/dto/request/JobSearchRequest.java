@@ -20,5 +20,5 @@ public class JobSearchRequest {
     private List<String> siteNames = List.of("indeed", "linkedin");
 
     @JsonProperty("hours_old")
-    private int hoursOld;
+    private Integer hoursOld;
 }
