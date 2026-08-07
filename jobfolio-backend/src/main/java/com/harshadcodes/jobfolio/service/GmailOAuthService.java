@@ -3,6 +3,9 @@ package com.harshadcodes.jobfolio.service;
 import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.services.gmail.Gmail;
 import com.harshadcodes.jobfolio.entity.EmailConnection;
 import com.harshadcodes.jobfolio.repository.EmailConnectionRepository;
 import com.harshadcodes.jobfolio.repository.UserRepository;
@@ -69,9 +72,14 @@ public class GmailOAuthService {
     }*/
 
     private String fetchConnectedEmailAddress(String accessToken) throws Exception {
-        // We'll build this properly in the Gmail API client step next -
-        // for now just a placeholder so the OAuth flow can be tested end-to-end
-        return "pending-gmail-client-step";
+        Gmail gmail = new Gmail.Builder(
+                GoogleNetHttpTransport.newTrustedTransport(),
+                GsonFactory.getDefaultInstance(),
+                request -> request.getHeaders().setAuthorization("Bearer " + accessToken))
+                .setApplicationName("Jobfolio")
+                .build();
+
+        return gmail.users().getProfile("me").execute().getEmailAddress();
     }
 
     public String buildAuthorizationUrl(String jwtToken) {
@@ -92,8 +100,6 @@ public class GmailOAuthService {
 
         String emailAddress = fetchConnectedEmailAddress(accessToken);
 
-        // Extract the user's identity from the JWT we passed through `state`,
-        // instead of relying on SecurityContextHolder (which has no session here)
         String userEmail = jwtUtil.extractEmail(state);
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -114,5 +120,29 @@ public class GmailOAuthService {
         connection.setSyncEnabled(true);
 
         emailConnectionRepository.save(connection);
+    }
+
+    public String getValidAccessToken(EmailConnection connection) throws Exception {
+        // If the token is still valid for at least 2 more minutes, just use it
+        if (connection.getTokenExpiry().isAfter(LocalDateTime.now().plusMinutes(2))) {
+            return encryptionService.decrypt(connection.getAccessToken());
+        }
+
+        // Otherwise, use the refresh token to get a new access token
+        String refreshToken = encryptionService.decrypt(connection.getRefreshToken());
+
+        GoogleTokenResponse tokenResponse = (GoogleTokenResponse) flow.newTokenRequest(refreshToken)
+                .setGrantType("refresh_token")
+                .set("refresh_token", refreshToken)
+                .execute();
+
+        String newAccessToken = tokenResponse.getAccessToken();
+        long expiresInSeconds = tokenResponse.getExpiresInSeconds();
+
+        connection.setAccessToken(encryptionService.encrypt(newAccessToken));
+        connection.setTokenExpiry(LocalDateTime.now().plusSeconds(expiresInSeconds));
+        emailConnectionRepository.save(connection);
+
+        return newAccessToken;
     }
 }
