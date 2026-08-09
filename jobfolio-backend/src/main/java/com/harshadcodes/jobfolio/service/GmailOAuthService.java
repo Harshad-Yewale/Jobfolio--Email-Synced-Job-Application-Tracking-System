@@ -2,6 +2,7 @@ package com.harshadcodes.jobfolio.service;
 
 import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
+import com.google.api.client.googleapis.auth.oauth2.GoogleRefreshTokenRequest;
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
@@ -33,6 +34,12 @@ public class GmailOAuthService {
 
     @Value("${google.redirect-uri}")
     private String redirectUri;
+
+    @Value("${google.client-id}")
+    private String clientId;
+
+    @Value("${google.client-secret}")
+    private String clientSecret;
 
    /* public String buildAuthorizationUrl() {
         return flow.newAuthorizationUrl()
@@ -123,18 +130,21 @@ public class GmailOAuthService {
     }
 
     public String getValidAccessToken(EmailConnection connection) throws Exception {
-        // If the token is still valid for at least 2 more minutes, just use it
         if (connection.getTokenExpiry().isAfter(LocalDateTime.now().plusMinutes(2))) {
             return encryptionService.decrypt(connection.getAccessToken());
         }
 
-        // Otherwise, use the refresh token to get a new access token
         String refreshToken = encryptionService.decrypt(connection.getRefreshToken());
 
-        GoogleTokenResponse tokenResponse = (GoogleTokenResponse) flow.newTokenRequest(refreshToken)
-                .setGrantType("refresh_token")
-                .set("refresh_token", refreshToken)
-                .execute();
+        GoogleRefreshTokenRequest request = new GoogleRefreshTokenRequest(
+                GoogleNetHttpTransport.newTrustedTransport(),
+                GsonFactory.getDefaultInstance(),
+                refreshToken,
+                clientId,
+                clientSecret
+        );
+
+        GoogleTokenResponse tokenResponse = request.execute();
 
         String newAccessToken = tokenResponse.getAccessToken();
         long expiresInSeconds = tokenResponse.getExpiresInSeconds();

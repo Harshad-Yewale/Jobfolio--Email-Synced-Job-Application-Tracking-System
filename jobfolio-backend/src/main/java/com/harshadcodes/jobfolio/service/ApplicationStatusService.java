@@ -25,14 +25,21 @@ public class ApplicationStatusService {
     private static final Set<ApplicationStatus> TERMINAL_STATUSES =
             Set.of(ApplicationStatus.ACCEPTED, ApplicationStatus.REJECTED);
 
+    // Used by controllers - identifies the user from the logged-in session
     public Application changeStatus(Long applicationId, ApplicationStatus newStatus, String source) {
-        Application application = applicationRepository.findByIdAndUserId(applicationId, authUtil.getCurrentUserId())
+        return changeStatusForUser(applicationId, authUtil.getCurrentUserId(), newStatus, source);
+    }
+
+    // Used by the background sync job - userId is passed in directly since there's no HTTP session
+    public Application changeStatusForUser(Long applicationId, Long userId, ApplicationStatus newStatus, String source) {
+        Application application = applicationRepository.findByIdAndUserId(applicationId, userId)
                 .orElseThrow(() -> new RuntimeException("Application not found"));
 
         ApplicationStatus oldStatus = application.getStatus();
 
         if (TERMINAL_STATUSES.contains(oldStatus)) {
-            throw new InvalidStatusTransitionException("Cannot change status - application is already " + oldStatus);
+            throw new InvalidStatusTransitionException(
+                    "Cannot change status - application is already " + oldStatus);
         }
 
         if (oldStatus == newStatus) {
