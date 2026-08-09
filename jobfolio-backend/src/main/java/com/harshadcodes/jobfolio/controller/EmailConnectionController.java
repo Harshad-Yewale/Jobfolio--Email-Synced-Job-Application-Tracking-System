@@ -1,9 +1,12 @@
 package com.harshadcodes.jobfolio.controller;
 
+import com.harshadcodes.jobfolio.entity.EmailConnection;
+import com.harshadcodes.jobfolio.service.EmailConnectionService;
 import com.harshadcodes.jobfolio.service.GmailOAuthService;
 import com.harshadcodes.jobfolio.util.JwtUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -15,6 +18,7 @@ public class EmailConnectionController {
 
     private final GmailOAuthService gmailOAuthService;
     private final JwtUtil jwtUtil;
+    private final EmailConnectionService emailConnectionService;
 
     @GetMapping("/oauth2/authorize")
     public void authorize(@RequestParam String token, HttpServletResponse response) throws IOException {
@@ -31,5 +35,29 @@ public class EmailConnectionController {
     public String callback(@RequestParam String code, @RequestParam String state) throws Exception {
         gmailOAuthService.handleCallback(code, state);
         return "Gmail connected successfully! You can close this tab.";
+    }
+
+
+    @GetMapping("/status")
+    public ResponseEntity<EmailConnection> getStatus() {
+        return ResponseEntity.ok(emailConnectionService.getMyConnection());
+    }
+
+    @DeleteMapping("/disconnect")
+    public ResponseEntity<Void> disconnect() {
+        emailConnectionService.disconnect();
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/pause")
+    public ResponseEntity<Void> pauseSync() {
+        emailConnectionService.pauseSync();
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/resume")
+    public ResponseEntity<Void> resumeSync() {
+        emailConnectionService.resumeSync();
+        return ResponseEntity.noContent().build();
     }
 }

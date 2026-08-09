@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface EmailConnectionRepository extends JpaRepository<EmailConnection, Long> {
     Optional<EmailConnection> findByUserId(Long userId);
     List<EmailConnection> findBySyncEnabledTrue();
+    Optional<EmailConnection> findByIdAndUserId(Long id, Long userId);
 }
