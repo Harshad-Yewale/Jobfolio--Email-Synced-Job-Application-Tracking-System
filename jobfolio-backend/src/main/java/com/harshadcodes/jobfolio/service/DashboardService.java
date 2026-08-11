@@ -1,0 +1,87 @@
+package com.harshadcodes.jobfolio.service;
+
+import com.harshadcodes.jobfolio.dto.response.ConversionFunnelResponse;
+import com.harshadcodes.jobfolio.dto.response.DashboardSummaryResponse;
+import com.harshadcodes.jobfolio.dto.response.WeeklyApplicationsResponse;
+import com.harshadcodes.jobfolio.entity.Application;
+import com.harshadcodes.jobfolio.entity.ApplicationStatus;
+import com.harshadcodes.jobfolio.repository.ApplicationEventRepository;
+import com.harshadcodes.jobfolio.repository.ApplicationRepository;
+import com.harshadcodes.jobfolio.util.AuthUtil;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
+@Service
+@RequiredArgsConstructor
+public class DashboardService {
+
+    private final ApplicationRepository applicationRepository;
+    private final AuthUtil authUtil;
+
+    private static final List<ApplicationStatus> TERMINAL_STATUSES =
+            List.of(ApplicationStatus.ACCEPTED, ApplicationStatus.REJECTED);
+
+    public DashboardSummaryResponse getSummary() {
+        Long userId = authUtil.getCurrentUserId();
+
+        long total = applicationRepository.countByUserId(userId);
+        long active = applicationRepository.countByUserIdAndStatusNotIn(userId, TERMINAL_STATUSES);
+        long interviews = applicationRepository.countByUserIdAndStatus(userId, ApplicationStatus.INTERVIEW);
+        long offers = applicationRepository.countByUserIdAndStatus(userId, ApplicationStatus.OFFER)
+                + applicationRepository.countByUserIdAndStatus(userId, ApplicationStatus.ACCEPTED);
+
+        double successRate = total == 0 ? 0.0 : (offers * 100.0) / total;
+
+        return new DashboardSummaryResponse(total, active, interviews, offers, Math.round(successRate * 10) / 10.0);
+    }
+
+    private final ApplicationEventRepository applicationEventRepository;
+
+    public ConversionFunnelResponse getConversionFunnel() {
+        Long userId = authUtil.getCurrentUserId();
+
+        // Every application starts at APPLIED, so total count works directly here
+        long applied = applicationRepository.countByUserId(userId);
+
+        long received = applicationEventRepository.countApplicationsThatReachedStatus(userId, ApplicationStatus.RECEIVED);
+        long assessment = applicationEventRepository.countApplicationsThatReachedStatus(userId, ApplicationStatus.ASSESSMENT);
+        long interview = applicationEventRepository.countApplicationsThatReachedStatus(userId, ApplicationStatus.INTERVIEW);
+        long offer = applicationEventRepository.countApplicationsThatReachedStatus(userId, ApplicationStatus.OFFER);
+
+        return new ConversionFunnelResponse(applied, received, assessment, interview, offer);
+    }
+
+    public List<WeeklyApplicationsResponse> getWeeklyApplications() {
+        Long userId = authUtil.getCurrentUserId();
+        LocalDateTime sevenWeeksAgo = LocalDateTime.now().minusWeeks(7);
+
+        List<Application> recentApplications = applicationRepository.findByUserIdSince(userId, sevenWeeksAgo);
+
+        Map<Integer, Long> countsByWeeksAgo = new TreeMap<>();
+        for (int i = 6; i >= 0; i--) {
+            countsByWeeksAgo.put(i, 0L);
+        }
+
+        for (Application app : recentApplications) {
+            long weeksAgo = ChronoUnit.WEEKS.between(app.getAppliedDate(), LocalDateTime.now());
+            if (weeksAgo >= 0 && weeksAgo <= 6) {
+                countsByWeeksAgo.merge((int) weeksAgo, 1L, Long::sum);
+            }
+        }
+
+        List<WeeklyApplicationsResponse> result = new ArrayList<>();
+        for (int weeksAgo = 6; weeksAgo >= 0; weeksAgo--) {
+            String label = weeksAgo == 0 ? "This week" : weeksAgo + "w ago";
+            result.add(new WeeklyApplicationsResponse(label, countsByWeeksAgo.get(weeksAgo)));
+        }
+
+        return result;
+    }
+}
