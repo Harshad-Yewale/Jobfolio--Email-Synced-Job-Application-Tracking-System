@@ -11,4 +11,5 @@ public class ConversionFunnelResponse {
     private long assessment;
     private long interview;
     private long offer;
+    private long accepted;
 }

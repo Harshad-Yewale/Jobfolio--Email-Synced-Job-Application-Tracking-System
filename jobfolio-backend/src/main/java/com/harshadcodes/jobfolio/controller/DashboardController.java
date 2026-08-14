@@ -2,12 +2,14 @@ package com.harshadcodes.jobfolio.controller;
 
 import com.harshadcodes.jobfolio.dto.response.ConversionFunnelResponse;
 import com.harshadcodes.jobfolio.dto.response.DashboardSummaryResponse;
+import com.harshadcodes.jobfolio.dto.response.RecentActivityResponse;
 import com.harshadcodes.jobfolio.dto.response.WeeklyApplicationsResponse;
 import com.harshadcodes.jobfolio.service.DashboardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -32,5 +34,11 @@ public class DashboardController {
     @GetMapping("/weekly")
     public ResponseEntity<List<WeeklyApplicationsResponse>> getWeekly() {
         return ResponseEntity.ok(dashboardService.getWeeklyApplications());
+    }
+
+    @GetMapping("/recent-activity")
+    public ResponseEntity<List<RecentActivityResponse>> getRecentActivity(
+            @RequestParam(defaultValue = "10") int limit) {
+        return ResponseEntity.ok(dashboardService.getRecentActivity(limit));
     }
 }

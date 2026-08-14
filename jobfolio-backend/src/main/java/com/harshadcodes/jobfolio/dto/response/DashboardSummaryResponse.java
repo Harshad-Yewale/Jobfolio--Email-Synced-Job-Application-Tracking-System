@@ -9,6 +9,7 @@ public class DashboardSummaryResponse {
     private long totalApplications;
     private long activeApplications;
     private long interviews;
-    private long offers;
+    private long offersReceived;
+    private long offersAccepted;
     private double successRate; // percentage, e.g. 19.0 for 19%
 }

@@ -1,7 +1,9 @@
 package com.harshadcodes.jobfolio.repository;
 
 import com.harshadcodes.jobfolio.entity.Application;
+import com.harshadcodes.jobfolio.entity.ApplicationEvent;
 import com.harshadcodes.jobfolio.entity.ApplicationStatus;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -24,4 +26,6 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
 
     @Query("SELECT a FROM Application a WHERE a.userId = :userId AND a.appliedDate >= :since")
     List<Application> findByUserIdSince(Long userId, LocalDateTime since);
+
+
 }
