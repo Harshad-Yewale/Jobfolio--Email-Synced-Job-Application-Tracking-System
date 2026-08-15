@@ -13,13 +13,13 @@ public class AuthUtil {
 
     private final UserRepository userRepository;
 
-    public String getCurrentUserEmail() {
+    public  String getCurrentUserEmail() {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext()
                 .getAuthentication().getPrincipal();
         return userDetails.getUsername();
     }
 
-    public Long getCurrentUserId() {
+    public  Long getCurrentUserId() {
         String email = getCurrentUserEmail();
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
