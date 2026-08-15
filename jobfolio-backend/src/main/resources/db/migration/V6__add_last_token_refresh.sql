@@ -1,0 +1,1 @@
+ALTER TABLE email_connections ADD COLUMN last_token_refresh_at TIMESTAMP;

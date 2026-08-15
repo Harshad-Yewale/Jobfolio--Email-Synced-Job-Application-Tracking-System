@@ -17,4 +17,6 @@ public class JobResponse {
     @JsonProperty("date_posted")
     private String datePosted;
     private String description;
+
+    private boolean alreadyApplied;
 }

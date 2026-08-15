@@ -118,6 +118,7 @@ public class GmailOAuthService {
         connection.setUserId(userId);
         connection.setEmailAddress(emailAddress);
         connection.setAccessToken(encryptionService.encrypt(accessToken));
+        connection.setLastTokenRefreshAt(LocalDateTime.now());
 
         if (refreshToken != null) {
             connection.setRefreshToken(encryptionService.encrypt(refreshToken));
@@ -151,6 +152,7 @@ public class GmailOAuthService {
 
         connection.setAccessToken(encryptionService.encrypt(newAccessToken));
         connection.setTokenExpiry(LocalDateTime.now().plusSeconds(expiresInSeconds));
+        connection.setLastTokenRefreshAt(LocalDateTime.now());
         emailConnectionRepository.save(connection);
 
         return newAccessToken;

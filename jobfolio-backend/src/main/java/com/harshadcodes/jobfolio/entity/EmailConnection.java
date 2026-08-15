@@ -33,5 +33,7 @@ public class EmailConnection {
 
     private boolean syncEnabled = true;
 
+    private LocalDateTime lastTokenRefreshAt;
+
     private LocalDateTime connectedAt = LocalDateTime.now();
 }

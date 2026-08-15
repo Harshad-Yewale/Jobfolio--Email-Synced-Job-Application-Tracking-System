@@ -1,5 +1,6 @@
 package com.harshadcodes.jobfolio.controller;
 
+import com.harshadcodes.jobfolio.dto.response.EmailConnectionStatusResponse;
 import com.harshadcodes.jobfolio.entity.EmailConnection;
 import com.harshadcodes.jobfolio.service.EmailConnectionService;
 import com.harshadcodes.jobfolio.service.GmailOAuthService;
@@ -39,8 +40,8 @@ public class EmailConnectionController {
 
 
     @GetMapping("/status")
-    public ResponseEntity<EmailConnection> getStatus() {
-        return ResponseEntity.ok(emailConnectionService.getMyConnection());
+    public ResponseEntity<EmailConnectionStatusResponse> getStatus() {
+        return ResponseEntity.ok(emailConnectionService.getConnectionStatus());
     }
 
     @DeleteMapping("/disconnect")
@@ -60,4 +61,6 @@ public class EmailConnectionController {
         emailConnectionService.resumeSync();
         return ResponseEntity.noContent().build();
     }
+
+
 }
