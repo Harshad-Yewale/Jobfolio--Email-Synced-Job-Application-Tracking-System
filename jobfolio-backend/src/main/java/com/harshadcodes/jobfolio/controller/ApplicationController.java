@@ -3,6 +3,7 @@ package com.harshadcodes.jobfolio.controller;
 import com.harshadcodes.jobfolio.dto.request.CreateApplicationRequest;
 import com.harshadcodes.jobfolio.dto.request.UpdateStatusRequest;
 import com.harshadcodes.jobfolio.dto.response.ApplicationEventResponse;
+import com.harshadcodes.jobfolio.dto.response.ApplicationResponse;
 import com.harshadcodes.jobfolio.entity.Application;
 import com.harshadcodes.jobfolio.entity.ApplicationEvent;
 import com.harshadcodes.jobfolio.service.ApplicationService;
@@ -24,18 +25,23 @@ public class ApplicationController {
     private final ApplicationStatusService applicationStatusService;
 
     @PostMapping
-    public ResponseEntity<Application> create(@Valid @RequestBody CreateApplicationRequest request) {
-        return ResponseEntity.ok(applicationService.createApplication(request));
+    public ResponseEntity<ApplicationResponse> create(@Valid @RequestBody CreateApplicationRequest request) {
+        Application application = applicationService.createApplication(request);
+        return ResponseEntity.ok(ApplicationResponse.from(application));
     }
 
     @GetMapping
-    public ResponseEntity<List<Application>> getAll() {
-        return ResponseEntity.ok(applicationService.getMyApplications());
+    public ResponseEntity<List<ApplicationResponse>> getAll() {
+        List<ApplicationResponse> responses = applicationService.getMyApplications().stream()
+                .map(ApplicationResponse::from)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(responses);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Application> getOne(@PathVariable Long id) {
-        return ResponseEntity.ok(applicationService.getApplicationOwnedByUser(id));
+    public ResponseEntity<ApplicationResponse> getOne(@PathVariable Long id) {
+        Application application = applicationService.getApplicationOwnedByUser(id);
+        return ResponseEntity.ok(ApplicationResponse.from(application));
     }
 
     @DeleteMapping("/{id}")
@@ -45,11 +51,11 @@ public class ApplicationController {
     }
 
     @PatchMapping("/{id}/status")
-    public ResponseEntity<Application> updateStatus(
+    public ResponseEntity<ApplicationResponse> updateStatus(
             @PathVariable Long id,
             @Valid @RequestBody UpdateStatusRequest request) {
         Application updated = applicationStatusService.changeStatus(id, request.getStatus(), "MANUAL");
-        return ResponseEntity.ok(updated);
+        return ResponseEntity.ok(ApplicationResponse.from(updated));
     }
 
     @GetMapping("/{id}/timeline")

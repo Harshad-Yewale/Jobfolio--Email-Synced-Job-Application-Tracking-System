@@ -48,6 +48,7 @@ public class ApplicationStatusService {
 
         application.setStatus(newStatus);
         application.setUpdatedAt(LocalDateTime.now());
+        application.setLastStatusSource(source);
         applicationRepository.save(application);
 
         ApplicationEvent event = new ApplicationEvent();

@@ -4,17 +4,8 @@ import { useAuthStore } from './stores/authStore';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ProtectedRoute from './components/ProtectedRoute';
-
-function DashboardPlaceholder() {
-  const { user, logout } = useAuthStore();
-  return (
-    <div style={{ padding: 40 }}>
-      <h2>Dashboard (placeholder)</h2>
-      <p>Logged in as: {user?.fullName} ({user?.email})</p>
-      <button onClick={() => logout()}>Log out</button>
-    </div>
-  );
-}
+import Layout from './components/Layout';
+import DashboardPage from './pages/DashboardPage';
 
 function App() {
   const rehydrate = useAuthStore((state) => state.rehydrate);
@@ -29,7 +20,9 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route element={<ProtectedRoute />}>
-          <Route path="/dashboard" element={<DashboardPlaceholder />} />
+          <Route element={<Layout />}>
+            <Route path="/dashboard" element={<DashboardPage />} />
+          </Route>
         </Route>
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
       </Routes>

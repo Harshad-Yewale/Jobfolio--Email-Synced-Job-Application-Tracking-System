@@ -1,0 +1,1 @@
+ALTER TABLE applications ADD COLUMN last_status_source VARCHAR(20) NOT NULL DEFAULT 'MANUAL';
