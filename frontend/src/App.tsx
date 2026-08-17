@@ -6,6 +6,7 @@ import RegisterPage from './pages/RegisterPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/Layout';
 import DashboardPage from './pages/DashboardPage';
+import ApplicationsPage from './pages/ApplicationPage';
 
 function App() {
   const rehydrate = useAuthStore((state) => state.rehydrate);
@@ -22,6 +23,7 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route element={<Layout />}>
             <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/applications" element={<ApplicationsPage />} />
           </Route>
         </Route>
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
