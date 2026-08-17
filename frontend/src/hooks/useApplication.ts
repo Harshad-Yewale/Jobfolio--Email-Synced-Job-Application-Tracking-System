@@ -32,3 +32,13 @@ export const useDeleteApplication = () => {
     },
   });
 };
+
+export const useCreateApplication = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: applicationsApi.createApplication,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['applications'] });
+    },
+  });
+};

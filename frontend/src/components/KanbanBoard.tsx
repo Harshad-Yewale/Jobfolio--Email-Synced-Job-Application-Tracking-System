@@ -1,6 +1,6 @@
 import { DndContext, type DragEndEvent } from '@dnd-kit/core';
 import type { Application, ApplicationStatus } from '../types/application';
-import KanbanColumn from './kanbanColumn';
+import KanbanColumn from './KanbanColumn';
 
 const COLUMN_ORDER: ApplicationStatus[] = [
   'APPLIED', 'RECEIVED', 'ASSESSMENT', 'INTERVIEW', 'OFFER', 'ACCEPTED', 'REJECTED',
@@ -31,7 +31,7 @@ function KanbanBoard({ applications, onDropApplication, onCardClick, locked, onL
 
   return (
     <DndContext onDragEnd={handleDragEnd}>
-      <div style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 8 }}>
+      <div style={{ display: 'flex', gap: 12, paddingBottom: 8, width: 'max-content' }}>
         {COLUMN_ORDER.map((status) => (
           <KanbanColumn
             key={status}

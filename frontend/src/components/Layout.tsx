@@ -88,7 +88,7 @@ function Layout() {
         </div>
       </aside>
 
-      <main style={{ marginLeft: 220, flex: 1, padding: '28px 32px' }}>
+      <main style={{ marginLeft: 220, flex: 1, padding: '28px 32px', minWidth: 0, display: 'flex', flexDirection: 'column' }}>
         <Outlet />
       </main>
     </div>
