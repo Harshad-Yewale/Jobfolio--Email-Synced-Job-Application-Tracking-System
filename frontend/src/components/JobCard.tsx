@@ -1,6 +1,7 @@
 import toast from 'react-hot-toast';
 import type { Job } from '../types/job';
 import { useCreateApplication } from '../hooks/useApplication';
+import { useSaveJob } from '../hooks/useSavedJobs';
 
 interface JobCardProps {
   job: Job;
@@ -8,6 +9,7 @@ interface JobCardProps {
 
 function JobCard({ job }: JobCardProps) {
   const createApplication = useCreateApplication();
+  const saveJob = useSaveJob();
 
   const handleMarkApplied = () => {
     createApplication.mutate(
@@ -25,11 +27,37 @@ function JobCard({ job }: JobCardProps) {
     );
   };
 
+  const handleSave = () => {
+    saveJob.mutate(
+      {
+        jobTitle: job.title,
+        company: job.company,
+        jobUrl: job.job_url ?? undefined,
+        location: job.location ?? undefined,
+        source: job.site ?? undefined,
+      },
+      {
+        onSuccess: () => toast.success('Saved'),
+        onError: () => toast.error('Could not save job.'),
+      },
+    );
+  };
+
   return (
     <div style={{ background: 'var(--panel)', border: '1px solid var(--line)', borderRadius: 12, padding: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
-      <div>
-        <div style={{ fontSize: 15, fontWeight: 600 }}>{job.title}</div>
-        <div style={{ fontSize: 13, color: 'var(--ink-soft)' }}>{job.company}</div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div>
+          <div style={{ fontSize: 15, fontWeight: 600 }}>{job.title}</div>
+          <div style={{ fontSize: 13, color: 'var(--ink-soft)' }}>{job.company}</div>
+        </div>
+        <button
+          onClick={handleSave}
+          disabled={saveJob.isPending}
+          title="Save for later"
+          style={{ background: 'transparent', border: 'none', fontSize: 18, cursor: 'pointer', lineHeight: 1, padding: 4 }}
+        >
+          {saveJob.isSuccess ? '★' : '☆'}
+        </button>
       </div>
 
       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', fontSize: 12, color: 'var(--ink-soft)' }}>
@@ -40,8 +68,8 @@ function JobCard({ job }: JobCardProps) {
 
       <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
         {job.job_url ? (
-          
-          <a  href={job.job_url}
+         <a 
+            href={job.job_url}
             target="_blank"
             rel="noopener noreferrer"
             style={{
