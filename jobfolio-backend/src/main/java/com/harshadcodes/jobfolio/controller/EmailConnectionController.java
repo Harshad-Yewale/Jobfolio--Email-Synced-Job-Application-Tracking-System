@@ -1,14 +1,18 @@
 package com.harshadcodes.jobfolio.controller;
 
 import com.harshadcodes.jobfolio.dto.response.EmailConnectionStatusResponse;
+import com.harshadcodes.jobfolio.dto.response.TokenResponse;
 import com.harshadcodes.jobfolio.entity.EmailConnection;
 import com.harshadcodes.jobfolio.service.EmailConnectionService;
 import com.harshadcodes.jobfolio.service.GmailOAuthService;
 import com.harshadcodes.jobfolio.util.JwtUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 
@@ -33,9 +37,18 @@ public class EmailConnectionController {
     }
 
     @GetMapping("/oauth2/callback")
-    public String callback(@RequestParam String code, @RequestParam String state) throws Exception {
+    public void callback(@RequestParam String code, @RequestParam String state, HttpServletResponse response) throws Exception {
         gmailOAuthService.handleCallback(code, state);
-        return "Gmail connected successfully! You can close this tab.";
+        response.sendRedirect("http://localhost:5173/settings?gmail=connected");
+    }
+
+    @GetMapping("/token")
+    public ResponseEntity<TokenResponse>getToken(HttpServletRequest request) {
+        String token = jwtUtil.extractTokenFromCookies(request);
+        if (token == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid token");
+        }
+        return  new ResponseEntity<>(new TokenResponse(token), HttpStatus.OK);
     }
 
 

@@ -1,5 +1,6 @@
 package com.harshadcodes.jobfolio.config;
 
+import com.harshadcodes.jobfolio.filter.CsrfCookieFilter;
 import com.harshadcodes.jobfolio.filter.JwtAuthFilter;
 import com.harshadcodes.jobfolio.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
     private final JwtAuthFilter jwtAuthFilter;
+    private final CsrfCookieFilter csrfCookieFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -55,6 +57,7 @@ public class SecurityConfig {
                         .ignoringRequestMatchers("/api/auth/**", "/api/email/oauth2/**")
                 )
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .addFilterAfter(csrfCookieFilter, org.springframework.security.web.csrf.CsrfFilter.class)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
