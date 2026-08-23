@@ -3,6 +3,7 @@ import {
 } from 'recharts';
 import { useSummary, useFunnel, useWeekly, useRecentActivity } from '../hooks/useDashboard';
 import type { ConversionFunnelResponse } from '../types/dashboard';
+import GmailReconnectBanner from '../components/GmailReconectBanner';
 
 const funnelStages: { key: keyof ConversionFunnelResponse; label: string; color: string }[] = [
   { key: 'applied', label: 'Applied', color: 'var(--st-applied)' },
@@ -36,6 +37,8 @@ function DashboardPage() {
         <h1 style={{ fontSize: 22 }}>Dashboard</h1>
         <p style={{ color: 'var(--ink-soft)', margin: '4px 0 0' }}>Your job search at a glance</p>
       </div>
+
+      <GmailReconnectBanner />
 
       {summaryLoading ? (
         <p>Loading stats...</p>
