@@ -4,6 +4,7 @@ import {
 import { useSummary, useFunnel, useWeekly, useRecentActivity } from '../hooks/useDashboard';
 import type { ConversionFunnelResponse } from '../types/dashboard';
 import GmailReconnectBanner from '../components/GmailReconectBanner';
+import Skeleton from '../components/Skeleton';
 
 const funnelStages: { key: keyof ConversionFunnelResponse; label: string; color: string }[] = [
   { key: 'applied', label: 'Applied', color: 'var(--st-applied)' },
@@ -41,8 +42,15 @@ function DashboardPage() {
       <GmailReconnectBanner />
 
       {summaryLoading ? (
-        <p>Loading stats...</p>
-      ) : summary ? (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 14, marginBottom: 28 }}>
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} style={{ background: 'var(--panel)', border: '1px solid var(--line)', borderRadius: 12, padding: '18px 20px' }}>
+                <Skeleton width="70%" height={12} style={{ marginBottom: 12 }} />
+                <Skeleton width="45%" height={26} />
+              </div>
+            ))}
+          </div>
+        ) : summary ? (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 14, marginBottom: 28 }}>
           <StatCard label="Total Applications" value={summary.totalApplications} />
           <StatCard label="Active" value={summary.activeApplications} />
@@ -57,8 +65,12 @@ function DashboardPage() {
         <div style={{ background: 'var(--panel)', border: '1px solid var(--line)', borderRadius: 12, padding: 20 }}>
           <h3 style={{ fontSize: 15, marginBottom: 16 }}>Applications per week</h3>
           {weeklyLoading ? (
-            <p>Loading...</p>
-          ) : (
+              <div style={{ display: 'flex', alignItems: 'flex-end', gap: 10, height: 220, padding: '0 8px' }}>
+                {Array.from({ length: 7 }).map((_, i) => (
+                  <Skeleton key={i} width="100%" height={`${40 + (i % 3) * 25}%`} borderRadius={4} />
+                ))}
+              </div>
+            ) : (
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={weekly}>
                 <XAxis dataKey="weekLabel" tick={{ fontSize: 12, fill: 'var(--ink-soft)' }} axisLine={false} tickLine={false} />
@@ -73,7 +85,15 @@ function DashboardPage() {
         <div style={{ background: 'var(--panel)', border: '1px solid var(--line)', borderRadius: 12, padding: 20 }}>
           <h3 style={{ fontSize: 15, marginBottom: 16 }}>Conversion funnel</h3>
           {funnelLoading ? (
-            <p>Loading...</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <Skeleton width={80} height={12} />
+                  <Skeleton height={18} borderRadius={6} />
+                  <Skeleton width={28} height={12} />
+                </div>
+              ))}
+            </div>
           ) : funnel ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {funnelStages.map((stage) => {
@@ -96,9 +116,19 @@ function DashboardPage() {
 
       <div style={{ background: 'var(--panel)', border: '1px solid var(--line)', borderRadius: 12, padding: 20 }}>
         <h3 style={{ fontSize: 15, marginBottom: 16 }}>Recent activity</h3>
-        {activityLoading ? (
-          <p>Loading...</p>
-        ) : activity && activity.length > 0 ? (
+       {activityLoading ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--line)', paddingBottom: 10 }}>
+                    <div style={{ flex: 1 }}>
+                      <Skeleton width="50%" height={14} style={{ marginBottom: 6 }} />
+                      <Skeleton width="30%" height={11} />
+                    </div>
+                    <Skeleton width={70} height={11} />
+                  </div>
+                ))}
+              </div>
+            ) : activity && activity.length > 0 ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {activity.map((event, i) => (
               <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--line)', paddingBottom: 10 }}>

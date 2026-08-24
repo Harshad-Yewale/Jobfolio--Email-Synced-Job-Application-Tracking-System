@@ -5,6 +5,7 @@ import KanbanBoard from '../components/KanbanBoard';
 import TimelineDrawer from '../components/TimelineDrawer';
 import AddApplicationModal from '../components/addApplicationModel';
 import type { ApplicationStatus } from '../types/application';
+import Skeleton from '../components/Skeleton';
 
 function ApplicationsPage() {
   const { data: applications, isLoading } = useApplications();
@@ -66,9 +67,31 @@ function ApplicationsPage() {
 
       {/* Scrollable board region - owns its own horizontal scroll, independent of header */}
       <div style={{ overflowX: 'auto', flex: 1, minWidth: 0 }}>
-        {isLoading ? (
-          <p>Loading applications...</p>
-        ) : (
+       {isLoading ? (
+              <div style={{ display: 'flex', gap: 12, width: 'max-content' }}>
+                {Array.from({ length: 7 }).map((_, colIndex) => (
+                  <div
+                    key={colIndex}
+                    style={{
+                      background: 'var(--bg)', borderRadius: 12, padding: 12, minWidth: 220,
+                      display: 'flex', flexDirection: 'column', gap: 10,
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '0 4px' }}>
+                      <Skeleton width={8} height={8} borderRadius={4} />
+                      <Skeleton width={70} height={12} />
+                    </div>
+                    {Array.from({ length: colIndex % 2 === 0 ? 2 : 1 }).map((_, cardIndex) => (
+                      <div key={cardIndex} style={{ background: 'var(--panel)', border: '1px solid var(--line)', borderRadius: 10, padding: 12 }}>
+                        <Skeleton width="80%" height={14} style={{ marginBottom: 6 }} />
+                        <Skeleton width="60%" height={12} style={{ marginBottom: 10 }} />
+                        <Skeleton width="40%" height={10} />
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            ) : (
           <KanbanBoard
             applications={applications ?? []}
             onDropApplication={handleDrop}

@@ -1,5 +1,6 @@
 import toast from 'react-hot-toast';
 import { useSavedJobs, useDeleteSavedJob, useApplyToSavedJob } from '../hooks/useSavedJobs';
+import Skeleton from '../components/Skeleton';
 
 function SavedJobsPage() {
   const { data: savedJobs, isLoading } = useSavedJobs();
@@ -28,10 +29,30 @@ function SavedJobsPage() {
           Jobs you've bookmarked for later.
         </p>
       </div>
-
-      {isLoading ? (
-        <p>Loading...</p>
-      ) : savedJobs && savedJobs.length > 0 ? (
+          {isLoading ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div
+                  key={i}
+                  style={{
+                    background: 'var(--panel)', border: '1px solid var(--line)', borderRadius: 12,
+                    padding: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap',
+                  }}
+                >
+                  <div style={{ flex: 1, minWidth: 180 }}>
+                    <Skeleton width="55%" height={15} style={{ marginBottom: 6 }} />
+                    <Skeleton width="40%" height={13} style={{ marginBottom: 8 }} />
+                    <Skeleton width="30%" height={11} />
+                  </div>
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <Skeleton width={70} height={32} borderRadius={8} />
+                    <Skeleton width={100} height={32} borderRadius={8} />
+                    <Skeleton width={80} height={32} borderRadius={8} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : savedJobs && savedJobs.length > 0 ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {savedJobs.map((job) => (
             <div
