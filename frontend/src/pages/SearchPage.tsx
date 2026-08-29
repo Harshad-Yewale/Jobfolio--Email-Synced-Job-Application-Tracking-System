@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useJobSearch } from '../hooks/useJobSearch';
 import JobCard from '../components/JobCard';
+import EmptyState from '../components/EmptyState';
 
 function SearchPage() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -72,7 +73,14 @@ function SearchPage() {
         <p style={{ color: 'var(--st-rejected)' }}>Search failed. Try again.</p>
       )}
 
-      {jobSearch.isSuccess && (
+     {jobSearch.isSuccess && (
+          jobSearch.data.count === 0 ? (
+            <EmptyState
+              icon="🔍"
+              title="No jobs found"
+              description="Try a broader keyword, a different location, or extend the date range."
+            />
+          ) : (
         <>
           <p style={{ fontSize: 13, color: 'var(--ink-soft)', marginBottom: 12 }}>
             {jobSearch.data.count} result{jobSearch.data.count !== 1 ? 's' : ''}
@@ -83,6 +91,7 @@ function SearchPage() {
             ))}
           </div>
         </>
+      )
       )}
     </div>
   );

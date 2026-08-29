@@ -1,11 +1,14 @@
 import toast from 'react-hot-toast';
 import { useSavedJobs, useDeleteSavedJob, useApplyToSavedJob } from '../hooks/useSavedJobs';
 import Skeleton from '../components/Skeleton';
+import EmptyState from '../components/EmptyState';
+import { useNavigate } from 'react-router-dom';
 
 function SavedJobsPage() {
   const { data: savedJobs, isLoading } = useSavedJobs();
   const deleteSavedJob = useDeleteSavedJob();
   const applyToSavedJob = useApplyToSavedJob();
+  const navigate = useNavigate();
 
   const handleRemove = (id: number) => {
     deleteSavedJob.mutate(id, {
@@ -101,9 +104,15 @@ function SavedJobsPage() {
             </div>
           ))}
         </div>
-      ) : (
-        <p style={{ color: 'var(--ink-soft)' }}>No saved jobs yet — save one from the Search page.</p>
-      )}
+              ) : (
+          <EmptyState
+            icon="⭐"
+            title="No saved jobs yet"
+            description="Bookmark jobs from Search to review and apply to them later."
+            actionLabel="Search for jobs"
+            onAction={() => navigate('/search')}
+          />
+        )}
     </div>
   );
 }

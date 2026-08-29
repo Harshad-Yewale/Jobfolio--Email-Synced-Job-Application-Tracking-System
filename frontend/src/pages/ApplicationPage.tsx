@@ -6,6 +6,8 @@ import TimelineDrawer from '../components/TimelineDrawer';
 import AddApplicationModal from '../components/addApplicationModel';
 import type { ApplicationStatus } from '../types/application';
 import Skeleton from '../components/Skeleton';
+import EmptyState from '../components/EmptyState';
+import { useNavigate } from 'react-router-dom';
 
 function ApplicationsPage() {
   const { data: applications, isLoading } = useApplications();
@@ -13,6 +15,7 @@ function ApplicationsPage() {
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [locked, setLocked] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     toast('Board is locked — click 🔒 Locked to enable dragging.');
@@ -91,7 +94,15 @@ function ApplicationsPage() {
                   </div>
                 ))}
               </div>
-            ) : (
+            ) :applications && applications.length === 0 ? (
+                <EmptyState
+                  icon="📋"
+                  title="No applications yet"
+                  description="Add one manually, or head to Search to find and apply to jobs."
+                  actionLabel="Search for jobs"
+                  onAction={() => navigate('/search')}
+                />
+              ) : (
           <KanbanBoard
             applications={applications ?? []}
             onDropApplication={handleDrop}

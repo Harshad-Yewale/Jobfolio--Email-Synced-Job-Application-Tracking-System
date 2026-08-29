@@ -10,6 +10,7 @@ import ApplicationsPage from './pages/ApplicationPage';
 import SearchPage from './pages/SearchPage';
 import SavedJobsPage from './pages/SavedJobsPage';
 import SettingsPage from './pages/SettingsPage';
+import LandingPage from './pages/LandingPage';
 
 function App() {
   const rehydrate = useAuthStore((state) => state.rehydrate);
@@ -32,7 +33,7 @@ function App() {
             <Route path="/settings" element={<SettingsPage />} />
           </Route>
         </Route>
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/" element={<LandingPage />} />
       </Routes>
     </BrowserRouter>
   );
