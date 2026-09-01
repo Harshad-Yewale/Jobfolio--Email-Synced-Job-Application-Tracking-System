@@ -54,7 +54,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(org.springframework.security.web.csrf.CookieCsrfTokenRepository.withHttpOnlyFalse())
                         .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
-                        .ignoringRequestMatchers("/api/auth/**", "/api/email/oauth2/**")
+                        .ignoringRequestMatchers("/api/auth/register", "/api/auth/login", "/api/email/oauth2/**")
                 )
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .addFilterAfter(csrfCookieFilter, org.springframework.security.web.csrf.CsrfFilter.class)
