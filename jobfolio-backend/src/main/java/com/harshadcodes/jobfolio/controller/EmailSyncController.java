@@ -25,7 +25,7 @@ public class EmailSyncController {
         EmailConnection connection = emailConnectionRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("No Gmail connection found"));
 
-        emailSyncJob.syncOneAccount(connection);
+        emailSyncJob.syncOneAccountPublic(connection);
 
         return ResponseEntity.ok("Sync completed - check your applications and console logs");
     }

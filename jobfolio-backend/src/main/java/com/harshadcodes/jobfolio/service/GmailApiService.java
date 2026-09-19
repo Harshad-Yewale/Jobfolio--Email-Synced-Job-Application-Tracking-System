@@ -13,6 +13,7 @@ import com.harshadcodes.jobfolio.entity.EmailConnection;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,22 +38,28 @@ public class GmailApiService {
         return profile.getEmailAddress();
     }
 
-    // Fetches recent messages - just metadata (subject, sender, date), not full body,
-    // since that's all the keyword classifier will need
-    public List<GmailMessageDto> fetchRecentMessages(EmailConnection connection, int maxResults) throws Exception {
+    public List<GmailMessageDto> fetchRecentMessages(EmailConnection connection, int maxResults, LocalDateTime since) throws Exception {
         String accessToken = gmailOAuthService.getValidAccessToken(connection);
         Gmail gmail = buildGmailClient(accessToken);
 
+        String query;
+        if (since != null) {
+            long epochSeconds = since.atZone(java.time.ZoneId.systemDefault()).toEpochSecond();
+            query = "after:" + epochSeconds;
+        } else {
+            query = "newer_than:7d"; // first-ever sync for this account - no pointer yet
+        }
+
         List<Message> messageList = gmail.users().messages().list("me")
                 .setMaxResults((long) maxResults)
-                .setQ("newer_than:7d") // only look at emails from the last 7 days
+                .setQ(query)
                 .execute()
                 .getMessages();
 
         List<GmailMessageDto> results = new ArrayList<>();
 
         if (messageList == null) {
-            return results; // no messages found
+            return results;
         }
 
         for (Message m : messageList) {
