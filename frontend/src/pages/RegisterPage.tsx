@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, Navigate } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 
 function RegisterPage() {
@@ -24,7 +24,13 @@ function RegisterPage() {
       setIsSubmitting(false);
     }
   };
+  const { isAuthenticated, isLoading } = useAuthStore();
 
+  if (isLoading) return <div style={{ padding: 40 }}>Loading...</div>;
+
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
       <div style={{ width: '100%', maxWidth: 360 }}>

@@ -39,8 +39,8 @@ function Layout() {
           bottom: 0,
         }}
       >
-        <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 18, color: '#fff', padding: '0 8px',display:"flex", gap:"12px" }}>
-          <img src='/logo.png'alt='logo'/>
+        <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 18, color: '#fff', padding: '0 8px',display:"flex", gap:"12px", alignItems:"center" }}>
+          <img src='/logo.png'alt='logo' style={{ width: 32, height: 32, objectFit: 'contain' }}/>
           Jobfolio
         </div>
 

@@ -1,4 +1,5 @@
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
+import { useAuthStore } from '../stores/authStore';
 
 const pipelineStages = [
   { color: 'var(--st-applied)' },
@@ -16,6 +17,14 @@ const mockColumns: { label: string; color: string; cards: { company: string; rol
 ];
 
 function LandingPage() {
+  const { isAuthenticated, isLoading } = useAuthStore();
+
+  if (isLoading) return <div style={{ padding: 40 }}>Loading...</div>;
+
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
       {/* Nav — full width bar */}
